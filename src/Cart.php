@@ -12,11 +12,18 @@ class Cart
 
     private bool $loaded = false;
 
+    public function __construct(
+        private readonly SimpleCalculator $calculator,
+        private readonly SimpleStorage $storage
+    )
+    {}
+
+
     public function getCost(): int
     {
         $this->loadItems();
 
-        return (new SimpleCalculator())->getCost($this->items);
+        return $this->calculator->getCost($this->items);
     }
 
     private function loadItems(): void
@@ -25,7 +32,7 @@ class Cart
             return;
         }
 
-        $this->items = (new SimpleStorage('cart'))->load();
+        $this->items = $this->storage->load();
         $this->loaded = true;
     }
 }

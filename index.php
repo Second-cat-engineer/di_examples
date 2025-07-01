@@ -2,8 +2,10 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use App\Calculator\SimpleCalculator;
 use App\Cart;
 use App\CartItem;
+use App\Storage\SimpleStorage;
 
 $items = [
     new CartItem(1, 5, 100),
@@ -13,7 +15,7 @@ $items = [
 $_SESSION['cart'] = serialize($items);
 
 try {
-    $cart = new Cart();
+    $cart = new Cart(new SimpleCalculator(), new SimpleStorage('cart'));
     echo $cart->getCost() . PHP_EOL;
 
 } catch (Exception $e) {
