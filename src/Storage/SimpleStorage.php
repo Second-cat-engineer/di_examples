@@ -4,14 +4,14 @@ namespace App\Storage;
 
 use App\CartItem;
 
-class SimpleStorage
+class SimpleStorage implements StorageInterface
 {
     public function __construct(
         private readonly string $key
     ) {}
 
     /**
-     * @return CartItem[]
+     * @inheritdoc
      */
     public function load(): array
     {
@@ -21,7 +21,7 @@ class SimpleStorage
     }
 
     /**
-     * @param CartItem[] $data
+     * @inheritdoc
      */
     public function save(array $data): void
     {
