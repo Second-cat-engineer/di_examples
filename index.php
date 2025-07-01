@@ -21,11 +21,18 @@ $_SESSION['cart'] = serialize($items);
 $container = new Container();
 $container->set(StorageInterface::class, fn () => new SimpleStorage('cart'));
 $container->set(CalculatorInterface::class, SimpleCalculator::class);
-$container->set(Cart::class, Cart::class);
+$container->setShared(Cart::class, Cart::class);
 //___________
 
 try {
     $cart = $container->get(Cart::class);
+
+    echo $cart->description . PHP_EOL;
+    $cart->description = 'this object is singleton';
+
+    $cart = $container->get(Cart::class);
+    echo $cart->description . PHP_EOL;
+
     echo $cart->getCost() . PHP_EOL;
 
 } catch (Exception $e) {
