@@ -1,0 +1,15 @@
+parameters:
+  cart_store: cart
+
+services:
+  StorageInterface:
+    class: App\Storage\SimpleStorage
+    arguments: ['%cart_store%']
+    shared: false
+
+  CalculatorInterface:
+    class: App\Calculator\SimpleCalculator
+
+  App\Cart:
+    class: App\Cart
+    arguments: ['@CalculatorInterface', '@StorageInterface']
