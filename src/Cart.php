@@ -7,6 +7,8 @@ use App\Storage\StorageInterface;
 
 class Cart
 {
+    public string $description = 'default value';
+
     /** @var CartItem[] */
     private array $items = [];
 
