@@ -8,23 +8,39 @@ use ReflectionClass;
 class Container implements ContainerInterface
 {
     private array $definitions = [];
+    private array $parameters = [];
     private array $shared = [];
 
-    public function set(string $id, string|callable $callback): void
+    public function setParameter(string $name, mixed $value): void
+    {
+        $this->parameters[$name] = $value;
+    }
+
+    public function getParameter(string $name): mixed
+    {
+        if (!array_key_exists($name, $this->parameters)) {
+            throw new \InvalidArgumentException("Parameter '$name' not found.");
+        }
+        return $this->parameters[$name];
+    }
+
+    public function set(string $id, string|callable $callback, array $arguments = []): void
     {
         $this->shared[$id] = null;
         $this->definitions[$id] = [
             'value' => $callback,
             'shared' => false,
+            'arguments' => $arguments,
         ];
     }
 
-    public function setShared(string $id, string|callable $callback): void
+    public function setShared(string $id, string|callable $callback, array $arguments = []): void
     {
         $this->shared[$id] = null;
         $this->definitions[$id] = [
             'value' => $callback,
             'shared' => true,
+            'arguments' => $arguments,
         ];
     }
 
@@ -41,13 +57,15 @@ class Container implements ContainerInterface
         if (array_key_exists($id, $this->definitions)) {
             $definition = $this->definitions[$id]['value'];
             $shared = $this->definitions[$id]['shared'];
+            $arguments = $this->definitions[$id]['arguments'];
         } else {
             $definition = $id;
             $shared = false;
+            $arguments = [];
         }
 
         $component = is_string($definition)
-            ? $this->make($definition)
+            ? $this->make($definition, $arguments)
             : $definition($this);
 
         if (!$component) {
@@ -72,7 +90,7 @@ class Container implements ContainerInterface
         return false;
     }
 
-    private function make(string $definition): ?object
+    private function make(string $definition, array $forcedArguments = []): ?object
     {
         if (!class_exists($definition)) {
             return null;
@@ -81,7 +99,19 @@ class Container implements ContainerInterface
         $reflection = new ReflectionClass($definition);
         $arguments = [];
         if (($constructor = $reflection->getConstructor()) !== null) {
-            foreach ($constructor->getParameters() as $param) {
+            foreach ($constructor->getParameters() as $index => $param) {
+                if (array_key_exists($index, $forcedArguments)) {
+                    $arg = $forcedArguments[$index];
+
+                    // Поддержка %param%
+                    if (is_string($arg) && preg_match('/^%(.+)%$/', $arg, $matches)) {
+                        $arg = $this->getParameter($matches[1]);
+                    }
+
+                    $arguments[] = $arg;
+                    continue;
+                }
+
                 $paramClass = $param->getType();
 
                 $arguments[] = $paramClass ? $this->get($paramClass->getName()) : null;
