@@ -2,8 +2,8 @@
 
 namespace App;
 
-use App\Calculator\SimpleCalculator;
-use App\Storage\SimpleStorage;
+use App\Calculator\CalculatorInterface;
+use App\Storage\StorageInterface;
 
 class Cart
 {
@@ -13,8 +13,8 @@ class Cart
     private bool $loaded = false;
 
     public function __construct(
-        private readonly SimpleCalculator $calculator,
-        private readonly SimpleStorage $storage
+        private readonly CalculatorInterface $calculator,
+        private readonly StorageInterface $storage
     )
     {}
 

@@ -4,11 +4,10 @@ namespace App\Calculator;
 
 use App\CartItem;
 
-class SimpleCalculator
+class SimpleCalculator implements CalculatorInterface
 {
     /**
-     * @param CartItem[] $items
-     * @return int
+     * @inheritdoc
      */
     public function getCost(array $items): int
     {
