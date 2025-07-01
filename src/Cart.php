@@ -4,7 +4,13 @@ namespace App;
 
 use App\Calculator\CalculatorInterface;
 use App\Storage\StorageInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
+#[Autoconfigure(
+    public: true,
+    autowire: true
+)]
 class Cart
 {
     /** @var CartItem[] */
@@ -13,7 +19,9 @@ class Cart
     private bool $loaded = false;
 
     public function __construct(
+        #[Autowire(service: CalculatorInterface::class)]
         private readonly CalculatorInterface $calculator,
+        #[Autowire(service: StorageInterface::class)]
         private readonly StorageInterface $storage
     )
     {}

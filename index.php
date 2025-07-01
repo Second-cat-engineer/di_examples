@@ -2,10 +2,10 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Calculator\SimpleCalculator;
 use App\Cart;
 use App\CartItem;
-use App\Storage\SimpleStorage;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 $items = [
     new CartItem(1, 5, 100),
@@ -14,8 +14,20 @@ $items = [
 ];
 $_SESSION['cart'] = serialize($items);
 
+//___________
+$container = new ContainerBuilder();
+$loader = new YamlFileLoader(
+    $container,
+    new Symfony\Component\Config\FileLocator(__DIR__)
+);
+$loader->load('services.yml');
+
+// Компиляция контейнера (обязательно после загрузки всех конфигов)
+$container->compile();
+//___________
+
 try {
-    $cart = new Cart(new SimpleCalculator(), new SimpleStorage('cart'));
+    $cart = $container->get(Cart::class);
     echo $cart->getCost() . PHP_EOL;
 
 } catch (Exception $e) {

@@ -3,10 +3,14 @@
 namespace App\Storage;
 
 use App\CartItem;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
+#[Autoconfigure]
 class SimpleStorage implements StorageInterface
 {
     public function __construct(
+        #[Autowire('%cart_store%')]
         private readonly string $key
     ) {}
 

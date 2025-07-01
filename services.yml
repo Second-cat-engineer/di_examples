@@ -1,0 +1,10 @@
+parameters:
+  cart_store: cart
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  App\:
+    resource: './src/*'

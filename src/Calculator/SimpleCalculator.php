@@ -3,7 +3,9 @@
 namespace App\Calculator;
 
 use App\CartItem;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
+#[Autoconfigure]
 class SimpleCalculator implements CalculatorInterface
 {
     /**
