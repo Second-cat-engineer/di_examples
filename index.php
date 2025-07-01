@@ -2,11 +2,13 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use App\Calculator\CalculatorInterface;
 use App\Calculator\SimpleCalculator;
 use App\Cart;
 use App\CartItem;
 use App\Container\Container;
 use App\Storage\SimpleStorage;
+use App\Storage\StorageInterface;
 
 $items = [
     new CartItem(1, 5, 100),
@@ -17,12 +19,9 @@ $_SESSION['cart'] = serialize($items);
 
 //___________
 $container = new Container();
-$container->set(SimpleStorage::class, fn () => new SimpleStorage('cart'));
-$container->set(SimpleCalculator::class, fn () => new SimpleCalculator());
-$container->set(Cart::class, fn (Container $container) => new Cart(
-    $container->get(SimpleCalculator::class),
-    $container->get(SimpleStorage::class))
-);
+$container->set(StorageInterface::class, fn () => new SimpleStorage('cart'));
+$container->set(CalculatorInterface::class, SimpleCalculator::class);
+$container->set(Cart::class, Cart::class);
 //___________
 
 try {
